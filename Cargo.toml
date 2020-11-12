@@ -1,6 +1,6 @@
 [package]
 name = "ssvm_tensorflow_interface"
-version = "0.0.1"
+version = "0.1.0"
 authors = ["yiying <yiying@secondstate.io>"]
 edition = "2018"
 readme = "README.md"
