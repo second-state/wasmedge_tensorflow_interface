@@ -11,7 +11,7 @@ From a high-level overview here, we are essentially building a tensorflow interf
 Developers will add the [`ssvm_interface_interface` crate](https://crates.io/crates/ssvm_interface_interface) as a dependency to their `Rust -> Wasm` applications. For example, add the following line to the application's `Cargo.toml` file.
 ```
 [dependencies]
-ssvm_tensorflow_interface = "^0.1.0"
+ssvm_tensorflow_interface = "^0.1.1"
 ```
 
 Developers will bring the functions of `ssvm_process_interface` into scope within their `Rust -> Wasm` application's code. For example, adding the following code to the top of their `main.rs
@@ -24,8 +24,16 @@ use ssvm_process_interface;
 ```rust
 // The mod_buf is a vec<u8> which contains model data.
 // The flat_img is a vec<f32> which contains normalized image in rgb32f format.
-let res_str = ssvm_tensorflow_interface::run_tensorflow_vision(&mod_buf, &flat_img, 224, 224, "input", &["MobilenetV2/Predictions/Softmax"]);
+let res = ssvm_tensorflow_interface::run_tensorflow_vision(&mod_buf, &flat_img, &[1, 224, 224, 3], 224, 224, "input", &["MobilenetV2/Predictions/Softmax"]);
 // The res_str is the result in json format.
+```
+
+## Convert Output Tensors
+
+```rust
+// The res is result of run_tensorflow_vision() above.
+// As the example above, there's only 1 output tensor which is at index 0.
+let res_vec: Vec<f32> = res.convert_to_vec(0);
 ```
 
 ## Image Loading And Conversion
