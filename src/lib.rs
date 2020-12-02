@@ -2,7 +2,7 @@
 //! # Adding this as a dependency
 //! ```rust, ignore
 //! [dependencies]
-//! ssvm_tensorflow_interface = "^0.1.2"
+//! ssvm_tensorflow_interface = "^0.1.3"
 //! ```
 //!
 //! # Bringing this into scope
@@ -17,80 +17,119 @@ use std::str;
 /// ssvm_tensorflow host functions.
 #[link(wasm_import_module = "ssvm_tensorflow")]
 extern "C" {
-    pub fn ssvm_tensorflow_load_jpg_to_rgb8(
-        img_buf: *const u8,
-        img_buf_len: u32,
-        img_width: u32,
-        img_height: u32,
-    ) -> u32;
-    pub fn ssvm_tensorflow_load_jpg_to_bgr8(
-        img_buf: *const u8,
-        img_buf_len: u32,
-        img_width: u32,
-        img_height: u32,
-    ) -> u32;
-    pub fn ssvm_tensorflow_load_jpg_to_rgb32f(
-        img_buf: *const u8,
-        img_buf_len: u32,
-        img_width: u32,
-        img_height: u32,
-    ) -> u32;
-    pub fn ssvm_tensorflow_load_jpg_to_bgr32f(
-        img_buf: *const u8,
-        img_buf_len: u32,
-        img_width: u32,
-        img_height: u32,
-    ) -> u32;
-    pub fn ssvm_tensorflow_load_png_to_rgb8(
-        img_buf: *const u8,
-        img_buf_len: u32,
-        img_width: u32,
-        img_height: u32,
-    ) -> u32;
-    pub fn ssvm_tensorflow_load_png_to_bgr8(
-        img_buf: *const u8,
-        img_buf_len: u32,
-        img_width: u32,
-        img_height: u32,
-    ) -> u32;
-    pub fn ssvm_tensorflow_load_png_to_rgb32f(
-        img_buf: *const u8,
-        img_buf_len: u32,
-        img_width: u32,
-        img_height: u32,
-    ) -> u32;
-    pub fn ssvm_tensorflow_load_png_to_bgr32f(
-        img_buf: *const u8,
-        img_buf_len: u32,
-        img_width: u32,
-        img_height: u32,
-    ) -> u32;
-    pub fn ssvm_tensorflow_exec_model(
-        model_buf: *const u8,
-        model_buf_len: u32,
-        out_tensors: *mut u8,
-    ) -> u32;
-    pub fn ssvm_tensorflow_alloc_tensor(
+    pub fn ssvm_tensorflow_create_session(model_buf: *const u8, model_buf_len: u32) -> u64;
+    pub fn ssvm_tensorflow_delete_session(context: u64);
+    pub fn ssvm_tensorflow_run_session(context: u64) -> u32;
+    pub fn ssvm_tensorflow_get_output_tensor(
+        context: u64,
+        output_name: *const u8,
+        output_name_len: u32,
+        index: u32,
+    ) -> u64;
+    pub fn ssvm_tensorflow_get_tensor_len(tensor_ptr: u64) -> u32;
+    pub fn ssvm_tensorflow_get_tensor_data(tensor_ptr: u64, buf: *mut u8);
+    pub fn ssvm_tensorflow_append_input(
+        context: u64,
+        input_name: *const u8,
+        input_name_len: u32,
+        index: u32,
         dim_vec: *const u8,
         dim_cnt: u32,
         data_type: u32,
         tensor_buf: *const u8,
         tensor_buf_len: u32,
+    );
+    pub fn ssvm_tensorflow_append_output(
+        context: u64,
+        output_name: *const u8,
+        output_name_len: u32,
+        index: u32,
+    );
+    pub fn ssvm_tensorflow_clear_input(context: u64);
+    pub fn ssvm_tensorflow_clear_output(context: u64);
+}
+
+/// ssvm_tensorflowlite host functions.
+#[link(wasm_import_module = "ssvm_tensorflowlite")]
+extern "C" {
+    pub fn ssvm_tensorflowlite_create_session(model_buf: *const u8, model_buf_len: u32) -> u64;
+    pub fn ssvm_tensorflowlite_delete_session(context: u64);
+    pub fn ssvm_tensorflowlite_run_session(context: u64) -> u32;
+    pub fn ssvm_tensorflowlite_get_output_tensor(
+        context: u64,
+        output_name: *const u8,
+        output_name_len: u32,
     ) -> u64;
-    pub fn ssvm_tensorflow_delete_tensor(tensor_ptr: u64);
-    pub fn ssvm_tensorflow_get_tensor_len(tensor_ptr: u64) -> u32;
-    pub fn ssvm_tensorflow_get_tensor_data(tensor_ptr: u64, buf: *mut u8);
-    pub fn ssvm_tensorflow_append_input(
+    pub fn ssvm_tensorflowlite_get_tensor_len(tensor_ptr: u64) -> u32;
+    pub fn ssvm_tensorflowlite_get_tensor_data(tensor_ptr: u64, buf: *mut u8);
+    pub fn ssvm_tensorflowlite_append_input(
+        context: u64,
         input_name: *const u8,
         input_name_len: u32,
-        index: u32,
-        tensor_ptr: u64,
+        tensor_buf: *const u8,
+        tensor_buf_len: u32,
     );
-    pub fn ssvm_tensorflow_append_output(output_name: *const u8, output_name_len: u32, index: u32);
-    pub fn ssvm_tensorflow_clear_input();
-    pub fn ssvm_tensorflow_clear_output();
-    pub fn ssvm_tensorflow_get_result_len() -> u32;
-    pub fn ssvm_tensorflow_get_result(buf: *mut u8);
+}
+
+/// ssvm_image host helper functions.
+#[link(wasm_import_module = "ssvm_image")]
+extern "C" {
+    pub fn ssvm_image_load_jpg_to_rgb8(
+        img_buf: *const u8,
+        img_buf_len: u32,
+        img_width: u32,
+        img_height: u32,
+        dst_buf: *mut u8,
+    ) -> u32;
+    pub fn ssvm_image_load_jpg_to_bgr8(
+        img_buf: *const u8,
+        img_buf_len: u32,
+        img_width: u32,
+        img_height: u32,
+        dst_buf: *mut u8,
+    ) -> u32;
+    pub fn ssvm_image_load_jpg_to_rgb32f(
+        img_buf: *const u8,
+        img_buf_len: u32,
+        img_width: u32,
+        img_height: u32,
+        dst_buf: *mut u8,
+    ) -> u32;
+    pub fn ssvm_image_load_jpg_to_bgr32f(
+        img_buf: *const u8,
+        img_buf_len: u32,
+        img_width: u32,
+        img_height: u32,
+        dst_buf: *mut u8,
+    ) -> u32;
+    pub fn ssvm_image_load_png_to_rgb8(
+        img_buf: *const u8,
+        img_buf_len: u32,
+        img_width: u32,
+        img_height: u32,
+        dst_buf: *mut u8,
+    ) -> u32;
+    pub fn ssvm_image_load_png_to_bgr8(
+        img_buf: *const u8,
+        img_buf_len: u32,
+        img_width: u32,
+        img_height: u32,
+        dst_buf: *mut u8,
+    ) -> u32;
+    pub fn ssvm_image_load_png_to_rgb32f(
+        img_buf: *const u8,
+        img_buf_len: u32,
+        img_width: u32,
+        img_height: u32,
+        dst_buf: *mut u8,
+    ) -> u32;
+    pub fn ssvm_image_load_png_to_bgr32f(
+        img_buf: *const u8,
+        img_buf_len: u32,
+        img_width: u32,
+        img_height: u32,
+        dst_buf: *mut u8,
+    ) -> u32;
 }
 
 /// TensorType trait. Internal only.
@@ -127,108 +166,196 @@ tensor_type!(i8, 6, 0);
 tensor_type!(i64, 9, 0);
 tensor_type!(bool, 10, false);
 
-/// The session arguments structure.
-pub struct SessionArgs {
-    input_names: Vec<String>,
-    input_idx: Vec<u32>,
-    input_tensor: Vec<u64>,
-    output_names: Vec<String>,
-    output_idx: Vec<u32>,
+#[derive(PartialEq, Eq)]
+pub enum ModelType {
+    TensorFlow = 0,
+    TensorFlowLite = 1,
 }
 
-impl SessionArgs {
-    pub fn new() -> SessionArgs {
-        SessionArgs {
-            input_names: vec![],
-            input_idx: vec![],
-            input_tensor: vec![],
-            output_names: vec![],
-            output_idx: vec![],
-        }
-    }
+/// The session structure.
+pub struct Session {
+    context: u64,
+    model_type: ModelType,
+}
 
-    pub fn add_input<T: TensorType>(&mut self, name: &str, tensor_buf: &[T], shape: &[i64]) {
-        // Append input name and operation index.
-        let name_pair: Vec<&str> = name.split(":").collect();
-        self.input_names.push(String::from(name_pair[0]));
-        let idx = if name_pair.len() > 1 {
-            name_pair[1].parse().unwrap()
-        } else {
-            0
-        };
-        self.input_idx.push(idx);
-
-        // Create input tensor.
+impl Session {
+    pub fn new<S: AsRef<[u8]>>(model_buf: S, mod_type: ModelType) -> Session {
         unsafe {
-            self.input_tensor.push(ssvm_tensorflow_alloc_tensor(
-                shape.as_ptr() as *const u8,
-                shape.len() as u32,
-                T::val(),
-                tensor_buf.as_ptr() as *const u8,
-                (tensor_buf.len() * mem::size_of::<T>()) as u32,
-            ))
-        }
-    }
-
-    pub fn add_output(&mut self, name: &str) {
-        // Append output name and operation index.
-        let name_pair: Vec<&str> = name.split(":").collect();
-        self.output_names.push(String::from(name_pair[0]));
-        let idx = if name_pair.len() > 1 {
-            name_pair[1].parse().unwrap()
-        } else {
-            0
-        };
-        self.output_idx.push(idx);
-    }
-}
-
-impl Drop for SessionArgs {
-    fn drop(&mut self) {
-        for &ptr in &self.input_tensor {
-            unsafe {
-                ssvm_tensorflow_delete_tensor(ptr);
+            Session {
+                context: if mod_type == ModelType::TensorFlow {
+                    ssvm_tensorflow_create_session(
+                        model_buf.as_ref().as_ptr() as *const u8,
+                        model_buf.as_ref().len() as u32,
+                    )
+                } else {
+                    ssvm_tensorflowlite_create_session(
+                        model_buf.as_ref().as_ptr() as *const u8,
+                        model_buf.as_ref().len() as u32,
+                    )
+                },
+                model_type: mod_type,
             }
         }
     }
-}
 
-/// The output tensor structure.
-pub struct Tensors {
-    names: Vec<String>,
-    idx: Vec<u32>,
-    tensor: Vec<u64>,
-}
+    /// Add input name, dimension, operation index, and input tensor into context.
+    pub fn add_input<T: TensorType>(
+        &mut self,
+        name: &str,
+        tensor_buf: &[T],
+        shape: &[i64],
+    ) -> &mut Session {
+        // Parse name and operation index.
+        let mut idx: u32 = 0;
+        let input_name: CString;
+        if self.model_type == ModelType::TensorFlow {
+            let name_pair: Vec<&str> = name.split(":").collect();
+            if name_pair.len() > 1 {
+                idx = name_pair[1].parse().unwrap();
+            }
+            input_name = CString::new(name_pair[0]).expect("");
+        } else {
+            input_name = CString::new(name.to_string()).expect("");
+        };
 
-impl Tensors {
+        // Append input tensor.
+        unsafe {
+            if self.model_type == ModelType::TensorFlow {
+                ssvm_tensorflow_append_input(
+                    self.context,
+                    input_name.as_ptr() as *const u8,
+                    input_name.as_bytes().len() as u32,
+                    idx,
+                    shape.as_ptr() as *const u8,
+                    shape.len() as u32,
+                    T::val(),
+                    tensor_buf.as_ptr() as *const u8,
+                    (tensor_buf.len() * mem::size_of::<T>()) as u32,
+                )
+            } else {
+                ssvm_tensorflowlite_append_input(
+                    self.context,
+                    input_name.as_ptr() as *const u8,
+                    input_name.as_bytes().len() as u32,
+                    tensor_buf.as_ptr() as *const u8,
+                    (tensor_buf.len() * mem::size_of::<T>()) as u32,
+                )
+            }
+        }
+        self
+    }
+
+    /// Add output name and operation index into context.
+    pub fn add_output(&mut self, name: &str) -> &mut Session {
+        // Tensorflow mode only.
+        if self.model_type == ModelType::TensorFlow {
+            let name_pair: Vec<&str> = name.split(":").collect();
+            let output_name = CString::new(name_pair[0]).expect("");
+            let idx = if name_pair.len() > 1 {
+                name_pair[1].parse().unwrap()
+            } else {
+                0
+            };
+            unsafe {
+                ssvm_tensorflow_append_output(
+                    self.context,
+                    output_name.as_ptr() as *const u8,
+                    output_name.as_bytes().len() as u32,
+                    idx,
+                )
+            }
+        }
+        self
+    }
+
+    /// Clear the set input tensors.
+    pub fn clear_input(&mut self) -> &mut Session {
+        if self.model_type == ModelType::TensorFlow {
+            unsafe {
+                ssvm_tensorflow_clear_input(self.context);
+            }
+        }
+        self
+    }
+
+    /// Clear the set output tensors.
+    pub fn clear_output(&mut self) -> &mut Session {
+        if self.model_type == ModelType::TensorFlow {
+            unsafe {
+                ssvm_tensorflow_clear_output(self.context);
+            }
+        }
+        self
+    }
+
+    /// Run session.
+    pub fn run(&mut self) -> &mut Session {
+        unsafe {
+            if self.model_type == ModelType::TensorFlow {
+                ssvm_tensorflow_run_session(self.context);
+            } else {
+                ssvm_tensorflowlite_run_session(self.context);
+            }
+        }
+        self
+    }
+
+    /// Get output tensor data by name.
     pub fn get_output<T: TensorType>(&self, name: &str) -> Vec<T> {
-        let name_pair: Vec<&str> = name.split(":").collect();
-        let get_idx = if name_pair.len() > 1 {
-            name_pair[1].parse().unwrap()
+        // Parse name and operation index.
+        let mut idx: u32 = 0;
+        let output_name: CString;
+        if self.model_type == ModelType::TensorFlow {
+            let name_pair: Vec<&str> = name.split(":").collect();
+            if name_pair.len() > 1 {
+                idx = name_pair[1].parse().unwrap();
+            }
+            output_name = CString::new(name_pair[0]).expect("");
         } else {
-            0
+            output_name = CString::new(name.to_string()).expect("");
         };
 
-        for i in 0..self.names.len() {
-            if self.names[i] == name_pair[0] && self.idx[i] == get_idx {
-                unsafe {
-                    let buf_len = ssvm_tensorflow_get_tensor_len(self.tensor[i]) as usize;
-                    let mut data: Vec<T> =
-                        vec![T::zero(); buf_len / mem::size_of::<T::InnerType>()];
-                    ssvm_tensorflow_get_tensor_data(self.tensor[i], data.as_mut_ptr() as *mut u8);
-                    return data;
+        // Get tensor data.
+        unsafe {
+            if self.model_type == ModelType::TensorFlow {
+                let tensor = ssvm_tensorflow_get_output_tensor(
+                    self.context,
+                    output_name.as_ptr() as *const u8,
+                    output_name.as_bytes().len() as u32,
+                    idx,
+                );
+                let buf_len = ssvm_tensorflow_get_tensor_len(tensor) as usize;
+                if buf_len == 0 {
+                    return Vec::new();
                 }
+                let mut data: Vec<T> = vec![T::zero(); buf_len / mem::size_of::<T::InnerType>()];
+                ssvm_tensorflow_get_tensor_data(tensor, data.as_mut_ptr() as *mut u8);
+                return data;
+            } else {
+                let tensor = ssvm_tensorflowlite_get_output_tensor(
+                    self.context,
+                    output_name.as_ptr() as *const u8,
+                    output_name.as_bytes().len() as u32,
+                );
+                let buf_len = ssvm_tensorflowlite_get_tensor_len(tensor) as usize;
+                if buf_len == 0 {
+                    return Vec::new();
+                }
+                let mut data: Vec<T> = vec![T::zero(); buf_len / mem::size_of::<T::InnerType>()];
+                ssvm_tensorflowlite_get_tensor_data(tensor, data.as_mut_ptr() as *mut u8);
+                return data;
             }
         }
-        return Vec::new();
     }
 }
 
-impl Drop for Tensors {
+impl Drop for Session {
     fn drop(&mut self) {
-        for &ptr in &self.tensor {
-            unsafe {
-                ssvm_tensorflow_delete_tensor(ptr);
+        unsafe {
+            if self.model_type == ModelType::TensorFlow {
+                ssvm_tensorflow_delete_session(self.context);
+            } else {
+                ssvm_tensorflowlite_delete_session(self.context);
             }
         }
     }
@@ -237,11 +364,14 @@ impl Drop for Tensors {
 /// Convert JPEG image in memory into rgb u8 vector.
 pub fn load_jpg_image_to_rgb8(img_buf: &[u8], w: u32, h: u32) -> Vec<u8> {
     unsafe {
-        ssvm_tensorflow_load_jpg_to_rgb8(img_buf.as_ptr() as *const u8, img_buf.len() as u32, w, h);
-        let result_len = ssvm_tensorflow_get_result_len();
-        let mut result_vec: Vec<u8> = vec![0; result_len as usize];
-        let result_ptr = result_vec.as_mut_ptr();
-        ssvm_tensorflow_get_result(result_ptr);
+        let mut result_vec: Vec<u8> = vec![0; (w * h * 3) as usize];
+        ssvm_image_load_jpg_to_rgb8(
+            img_buf.as_ptr() as *const u8,
+            img_buf.len() as u32,
+            w,
+            h,
+            result_vec.as_mut_ptr() as *mut u8,
+        );
         result_vec
     }
 }
@@ -249,11 +379,14 @@ pub fn load_jpg_image_to_rgb8(img_buf: &[u8], w: u32, h: u32) -> Vec<u8> {
 /// Convert JPEG image in memory into bgr u8 vector.
 pub fn load_jpg_image_to_bgr8(img_buf: &[u8], w: u32, h: u32) -> Vec<u8> {
     unsafe {
-        ssvm_tensorflow_load_jpg_to_bgr8(img_buf.as_ptr() as *const u8, img_buf.len() as u32, w, h);
-        let result_len = ssvm_tensorflow_get_result_len();
-        let mut result_vec: Vec<u8> = vec![0; result_len as usize];
-        let result_ptr = result_vec.as_mut_ptr();
-        ssvm_tensorflow_get_result(result_ptr);
+        let mut result_vec: Vec<u8> = vec![0; (w * h * 3) as usize];
+        ssvm_image_load_jpg_to_bgr8(
+            img_buf.as_ptr() as *const u8,
+            img_buf.len() as u32,
+            w,
+            h,
+            result_vec.as_mut_ptr() as *mut u8,
+        );
         result_vec
     }
 }
@@ -261,16 +394,14 @@ pub fn load_jpg_image_to_bgr8(img_buf: &[u8], w: u32, h: u32) -> Vec<u8> {
 /// Convert JPEG image in memory into rgb f32 vector.
 pub fn load_jpg_image_to_rgb32f(img_buf: &[u8], w: u32, h: u32) -> Vec<f32> {
     unsafe {
-        ssvm_tensorflow_load_jpg_to_rgb32f(
+        let mut result_vec: Vec<f32> = vec![0.0; (w * h * 3) as usize];
+        ssvm_image_load_jpg_to_rgb32f(
             img_buf.as_ptr() as *const u8,
             img_buf.len() as u32,
             w,
             h,
+            result_vec.as_mut_ptr() as *mut u8,
         );
-        let result_len = ssvm_tensorflow_get_result_len();
-        let mut result_vec: Vec<f32> = vec![0.0; result_len as usize / mem::size_of::<f32>()];
-        let result_ptr = result_vec.as_mut_ptr();
-        ssvm_tensorflow_get_result(result_ptr as *mut u8);
         result_vec
     }
 }
@@ -278,16 +409,14 @@ pub fn load_jpg_image_to_rgb32f(img_buf: &[u8], w: u32, h: u32) -> Vec<f32> {
 /// Convert JPEG image in memory into bgr f32 vector.
 pub fn load_jpg_image_to_bgr32f(img_buf: &[u8], w: u32, h: u32) -> Vec<f32> {
     unsafe {
-        ssvm_tensorflow_load_jpg_to_bgr32f(
+        let mut result_vec: Vec<f32> = vec![0.0; (w * h * 3) as usize];
+        ssvm_image_load_jpg_to_bgr32f(
             img_buf.as_ptr() as *const u8,
             img_buf.len() as u32,
             w,
             h,
+            result_vec.as_mut_ptr() as *mut u8,
         );
-        let result_len = ssvm_tensorflow_get_result_len();
-        let mut result_vec: Vec<f32> = vec![0.0; result_len as usize / mem::size_of::<f32>()];
-        let result_ptr = result_vec.as_mut_ptr();
-        ssvm_tensorflow_get_result(result_ptr as *mut u8);
         result_vec
     }
 }
@@ -295,11 +424,14 @@ pub fn load_jpg_image_to_bgr32f(img_buf: &[u8], w: u32, h: u32) -> Vec<f32> {
 /// Convert PNG image in memory into rgb u8 vector.
 pub fn load_png_image_to_rgb8(img_buf: &[u8], w: u32, h: u32) -> Vec<u8> {
     unsafe {
-        ssvm_tensorflow_load_png_to_rgb8(img_buf.as_ptr() as *const u8, img_buf.len() as u32, w, h);
-        let result_len = ssvm_tensorflow_get_result_len();
-        let mut result_vec: Vec<u8> = vec![0; result_len as usize];
-        let result_ptr = result_vec.as_mut_ptr();
-        ssvm_tensorflow_get_result(result_ptr);
+        let mut result_vec: Vec<u8> = vec![0; (w * h * 3) as usize];
+        ssvm_image_load_png_to_rgb8(
+            img_buf.as_ptr() as *const u8,
+            img_buf.len() as u32,
+            w,
+            h,
+            result_vec.as_mut_ptr() as *mut u8,
+        );
         result_vec
     }
 }
@@ -307,11 +439,14 @@ pub fn load_png_image_to_rgb8(img_buf: &[u8], w: u32, h: u32) -> Vec<u8> {
 /// Convert PNG image in memory into bgr u8 vector.
 pub fn load_png_image_to_bgr8(img_buf: &[u8], w: u32, h: u32) -> Vec<u8> {
     unsafe {
-        ssvm_tensorflow_load_png_to_bgr8(img_buf.as_ptr() as *const u8, img_buf.len() as u32, w, h);
-        let result_len = ssvm_tensorflow_get_result_len();
-        let mut result_vec: Vec<u8> = vec![0; result_len as usize];
-        let result_ptr = result_vec.as_mut_ptr();
-        ssvm_tensorflow_get_result(result_ptr);
+        let mut result_vec: Vec<u8> = vec![0; (w * h * 3) as usize];
+        ssvm_image_load_png_to_bgr8(
+            img_buf.as_ptr() as *const u8,
+            img_buf.len() as u32,
+            w,
+            h,
+            result_vec.as_mut_ptr() as *mut u8,
+        );
         result_vec
     }
 }
@@ -319,16 +454,14 @@ pub fn load_png_image_to_bgr8(img_buf: &[u8], w: u32, h: u32) -> Vec<u8> {
 /// Convert PNG image in memory into rgb f32 vector.
 pub fn load_png_image_to_rgb32f(img_buf: &[u8], w: u32, h: u32) -> Vec<f32> {
     unsafe {
-        ssvm_tensorflow_load_png_to_rgb32f(
+        let mut result_vec: Vec<f32> = vec![0.0; (w * h * 3) as usize];
+        ssvm_image_load_png_to_rgb32f(
             img_buf.as_ptr() as *const u8,
             img_buf.len() as u32,
             w,
             h,
+            result_vec.as_mut_ptr() as *mut u8,
         );
-        let result_len = ssvm_tensorflow_get_result_len();
-        let mut result_vec: Vec<f32> = vec![0.0; result_len as usize / mem::size_of::<f32>()];
-        let result_ptr = result_vec.as_mut_ptr();
-        ssvm_tensorflow_get_result(result_ptr as *mut u8);
         result_vec
     }
 }
@@ -336,56 +469,14 @@ pub fn load_png_image_to_rgb32f(img_buf: &[u8], w: u32, h: u32) -> Vec<f32> {
 /// Convert PNG image in memory into bgr f32 vector.
 pub fn load_png_image_to_bgr32f(img_buf: &[u8], w: u32, h: u32) -> Vec<f32> {
     unsafe {
-        ssvm_tensorflow_load_png_to_bgr32f(
+        let mut result_vec: Vec<f32> = vec![0.0; (w * h * 3) as usize];
+        ssvm_image_load_png_to_bgr32f(
             img_buf.as_ptr() as *const u8,
             img_buf.len() as u32,
             w,
             h,
+            result_vec.as_mut_ptr() as *mut u8,
         );
-        let result_len = ssvm_tensorflow_get_result_len();
-        let mut result_vec: Vec<f32> = vec![0.0; result_len as usize / mem::size_of::<f32>()];
-        let result_ptr = result_vec.as_mut_ptr();
-        ssvm_tensorflow_get_result(result_ptr as *mut u8);
         result_vec
-    }
-}
-
-/// Run tensorflow model with image input tensor.
-pub fn exec_model(model_buf: &[u8], args: &SessionArgs) -> Tensors {
-    unsafe {
-        for i in 0..args.input_names.len() {
-            let input_name_cstr = CString::new(args.input_names[i].to_string()).expect("");
-            ssvm_tensorflow_append_input(
-                input_name_cstr.as_ptr() as *const u8,
-                input_name_cstr.as_bytes().len() as u32,
-                args.input_idx[i],
-                args.input_tensor[i],
-            );
-        }
-
-        for i in 0..args.output_names.len() {
-            let output_name_cstr = CString::new(args.output_names[i].to_string()).expect("");
-            ssvm_tensorflow_append_output(
-                output_name_cstr.as_ptr() as *const u8,
-                output_name_cstr.as_bytes().len() as u32,
-                args.output_idx[i],
-            );
-        }
-
-        let mut out_tensors: Vec<u64> = vec![0; args.output_names.len()];
-        ssvm_tensorflow_exec_model(
-            model_buf.as_ptr() as *const u8,
-            model_buf.len() as u32,
-            out_tensors.as_mut_ptr() as *mut u8,
-        );
-
-        ssvm_tensorflow_clear_input();
-        ssvm_tensorflow_clear_output();
-
-        Tensors {
-            names: args.output_names.clone(),
-            idx: args.output_idx.clone(),
-            tensor: out_tensors,
-        }
     }
 }
