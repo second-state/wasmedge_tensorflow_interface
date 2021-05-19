@@ -2,33 +2,33 @@
 //! # Adding this as a dependency
 //! ```rust, ignore
 //! [dependencies]
-//! ssvm_tensorflow_interface = "^0.1.3"
+//! wasmedge_tensorflow_interface = "^0.2.0"
 //! ```
 //!
 //! # Bringing this into scope
 //! ```rust, ignore
-//! use ssvm_tensorflow_interface;
+//! use wasmedge_tensorflow_interface;
 //! ```
 
 use std::ffi::CString;
 use std::mem;
 use std::str;
 
-/// ssvm_tensorflow host functions.
-#[link(wasm_import_module = "ssvm_tensorflow")]
+/// wasmedge_tensorflow host functions.
+#[link(wasm_import_module = "wasmedge_tensorflow")]
 extern "C" {
-    pub fn ssvm_tensorflow_create_session(model_buf: *const u8, model_buf_len: u32) -> u64;
-    pub fn ssvm_tensorflow_delete_session(context: u64);
-    pub fn ssvm_tensorflow_run_session(context: u64) -> u32;
-    pub fn ssvm_tensorflow_get_output_tensor(
+    pub fn wasmedge_tensorflow_create_session(model_buf: *const u8, model_buf_len: u32) -> u64;
+    pub fn wasmedge_tensorflow_delete_session(context: u64);
+    pub fn wasmedge_tensorflow_run_session(context: u64) -> u32;
+    pub fn wasmedge_tensorflow_get_output_tensor(
         context: u64,
         output_name: *const u8,
         output_name_len: u32,
         index: u32,
     ) -> u64;
-    pub fn ssvm_tensorflow_get_tensor_len(tensor_ptr: u64) -> u32;
-    pub fn ssvm_tensorflow_get_tensor_data(tensor_ptr: u64, buf: *mut u8);
-    pub fn ssvm_tensorflow_append_input(
+    pub fn wasmedge_tensorflow_get_tensor_len(tensor_ptr: u64) -> u32;
+    pub fn wasmedge_tensorflow_get_tensor_data(tensor_ptr: u64, buf: *mut u8);
+    pub fn wasmedge_tensorflow_append_input(
         context: u64,
         input_name: *const u8,
         input_name_len: u32,
@@ -39,30 +39,30 @@ extern "C" {
         tensor_buf: *const u8,
         tensor_buf_len: u32,
     );
-    pub fn ssvm_tensorflow_append_output(
+    pub fn wasmedge_tensorflow_append_output(
         context: u64,
         output_name: *const u8,
         output_name_len: u32,
         index: u32,
     );
-    pub fn ssvm_tensorflow_clear_input(context: u64);
-    pub fn ssvm_tensorflow_clear_output(context: u64);
+    pub fn wasmedge_tensorflow_clear_input(context: u64);
+    pub fn wasmedge_tensorflow_clear_output(context: u64);
 }
 
-/// ssvm_tensorflowlite host functions.
-#[link(wasm_import_module = "ssvm_tensorflowlite")]
+/// wasmedge_tensorflowlite host functions.
+#[link(wasm_import_module = "wasmedge_tensorflowlite")]
 extern "C" {
-    pub fn ssvm_tensorflowlite_create_session(model_buf: *const u8, model_buf_len: u32) -> u64;
-    pub fn ssvm_tensorflowlite_delete_session(context: u64);
-    pub fn ssvm_tensorflowlite_run_session(context: u64) -> u32;
-    pub fn ssvm_tensorflowlite_get_output_tensor(
+    pub fn wasmedge_tensorflowlite_create_session(model_buf: *const u8, model_buf_len: u32) -> u64;
+    pub fn wasmedge_tensorflowlite_delete_session(context: u64);
+    pub fn wasmedge_tensorflowlite_run_session(context: u64) -> u32;
+    pub fn wasmedge_tensorflowlite_get_output_tensor(
         context: u64,
         output_name: *const u8,
         output_name_len: u32,
     ) -> u64;
-    pub fn ssvm_tensorflowlite_get_tensor_len(tensor_ptr: u64) -> u32;
-    pub fn ssvm_tensorflowlite_get_tensor_data(tensor_ptr: u64, buf: *mut u8);
-    pub fn ssvm_tensorflowlite_append_input(
+    pub fn wasmedge_tensorflowlite_get_tensor_len(tensor_ptr: u64) -> u32;
+    pub fn wasmedge_tensorflowlite_get_tensor_data(tensor_ptr: u64, buf: *mut u8);
+    pub fn wasmedge_tensorflowlite_append_input(
         context: u64,
         input_name: *const u8,
         input_name_len: u32,
@@ -71,59 +71,59 @@ extern "C" {
     );
 }
 
-/// ssvm_image host helper functions.
-#[link(wasm_import_module = "ssvm_image")]
+/// wasmedge_image host helper functions.
+#[link(wasm_import_module = "wasmedge_image")]
 extern "C" {
-    pub fn ssvm_image_load_jpg_to_rgb8(
+    pub fn wasmedge_image_load_jpg_to_rgb8(
         img_buf: *const u8,
         img_buf_len: u32,
         img_width: u32,
         img_height: u32,
         dst_buf: *mut u8,
     ) -> u32;
-    pub fn ssvm_image_load_jpg_to_bgr8(
+    pub fn wasmedge_image_load_jpg_to_bgr8(
         img_buf: *const u8,
         img_buf_len: u32,
         img_width: u32,
         img_height: u32,
         dst_buf: *mut u8,
     ) -> u32;
-    pub fn ssvm_image_load_jpg_to_rgb32f(
+    pub fn wasmedge_image_load_jpg_to_rgb32f(
         img_buf: *const u8,
         img_buf_len: u32,
         img_width: u32,
         img_height: u32,
         dst_buf: *mut u8,
     ) -> u32;
-    pub fn ssvm_image_load_jpg_to_bgr32f(
+    pub fn wasmedge_image_load_jpg_to_bgr32f(
         img_buf: *const u8,
         img_buf_len: u32,
         img_width: u32,
         img_height: u32,
         dst_buf: *mut u8,
     ) -> u32;
-    pub fn ssvm_image_load_png_to_rgb8(
+    pub fn wasmedge_image_load_png_to_rgb8(
         img_buf: *const u8,
         img_buf_len: u32,
         img_width: u32,
         img_height: u32,
         dst_buf: *mut u8,
     ) -> u32;
-    pub fn ssvm_image_load_png_to_bgr8(
+    pub fn wasmedge_image_load_png_to_bgr8(
         img_buf: *const u8,
         img_buf_len: u32,
         img_width: u32,
         img_height: u32,
         dst_buf: *mut u8,
     ) -> u32;
-    pub fn ssvm_image_load_png_to_rgb32f(
+    pub fn wasmedge_image_load_png_to_rgb32f(
         img_buf: *const u8,
         img_buf_len: u32,
         img_width: u32,
         img_height: u32,
         dst_buf: *mut u8,
     ) -> u32;
-    pub fn ssvm_image_load_png_to_bgr32f(
+    pub fn wasmedge_image_load_png_to_bgr32f(
         img_buf: *const u8,
         img_buf_len: u32,
         img_width: u32,
@@ -183,12 +183,12 @@ impl Session {
         unsafe {
             Session {
                 context: if mod_type == ModelType::TensorFlow {
-                    ssvm_tensorflow_create_session(
+                    wasmedge_tensorflow_create_session(
                         model_buf.as_ref().as_ptr() as *const u8,
                         model_buf.as_ref().len() as u32,
                     )
                 } else {
-                    ssvm_tensorflowlite_create_session(
+                    wasmedge_tensorflowlite_create_session(
                         model_buf.as_ref().as_ptr() as *const u8,
                         model_buf.as_ref().len() as u32,
                     )
@@ -221,7 +221,7 @@ impl Session {
         // Append input tensor.
         unsafe {
             if self.model_type == ModelType::TensorFlow {
-                ssvm_tensorflow_append_input(
+                wasmedge_tensorflow_append_input(
                     self.context,
                     input_name.as_ptr() as *const u8,
                     input_name.as_bytes().len() as u32,
@@ -233,7 +233,7 @@ impl Session {
                     (tensor_buf.len() * mem::size_of::<T>()) as u32,
                 )
             } else {
-                ssvm_tensorflowlite_append_input(
+                wasmedge_tensorflowlite_append_input(
                     self.context,
                     input_name.as_ptr() as *const u8,
                     input_name.as_bytes().len() as u32,
@@ -257,7 +257,7 @@ impl Session {
                 0
             };
             unsafe {
-                ssvm_tensorflow_append_output(
+                wasmedge_tensorflow_append_output(
                     self.context,
                     output_name.as_ptr() as *const u8,
                     output_name.as_bytes().len() as u32,
@@ -272,7 +272,7 @@ impl Session {
     pub fn clear_input(&mut self) -> &mut Session {
         if self.model_type == ModelType::TensorFlow {
             unsafe {
-                ssvm_tensorflow_clear_input(self.context);
+                wasmedge_tensorflow_clear_input(self.context);
             }
         }
         self
@@ -282,7 +282,7 @@ impl Session {
     pub fn clear_output(&mut self) -> &mut Session {
         if self.model_type == ModelType::TensorFlow {
             unsafe {
-                ssvm_tensorflow_clear_output(self.context);
+                wasmedge_tensorflow_clear_output(self.context);
             }
         }
         self
@@ -292,9 +292,9 @@ impl Session {
     pub fn run(&mut self) -> &mut Session {
         unsafe {
             if self.model_type == ModelType::TensorFlow {
-                ssvm_tensorflow_run_session(self.context);
+                wasmedge_tensorflow_run_session(self.context);
             } else {
-                ssvm_tensorflowlite_run_session(self.context);
+                wasmedge_tensorflowlite_run_session(self.context);
             }
         }
         self
@@ -318,31 +318,31 @@ impl Session {
         // Get tensor data.
         unsafe {
             if self.model_type == ModelType::TensorFlow {
-                let tensor = ssvm_tensorflow_get_output_tensor(
+                let tensor = wasmedge_tensorflow_get_output_tensor(
                     self.context,
                     output_name.as_ptr() as *const u8,
                     output_name.as_bytes().len() as u32,
                     idx,
                 );
-                let buf_len = ssvm_tensorflow_get_tensor_len(tensor) as usize;
+                let buf_len = wasmedge_tensorflow_get_tensor_len(tensor) as usize;
                 if buf_len == 0 {
                     return Vec::new();
                 }
                 let mut data: Vec<T> = vec![T::zero(); buf_len / mem::size_of::<T::InnerType>()];
-                ssvm_tensorflow_get_tensor_data(tensor, data.as_mut_ptr() as *mut u8);
+                wasmedge_tensorflow_get_tensor_data(tensor, data.as_mut_ptr() as *mut u8);
                 return data;
             } else {
-                let tensor = ssvm_tensorflowlite_get_output_tensor(
+                let tensor = wasmedge_tensorflowlite_get_output_tensor(
                     self.context,
                     output_name.as_ptr() as *const u8,
                     output_name.as_bytes().len() as u32,
                 );
-                let buf_len = ssvm_tensorflowlite_get_tensor_len(tensor) as usize;
+                let buf_len = wasmedge_tensorflowlite_get_tensor_len(tensor) as usize;
                 if buf_len == 0 {
                     return Vec::new();
                 }
                 let mut data: Vec<T> = vec![T::zero(); buf_len / mem::size_of::<T::InnerType>()];
-                ssvm_tensorflowlite_get_tensor_data(tensor, data.as_mut_ptr() as *mut u8);
+                wasmedge_tensorflowlite_get_tensor_data(tensor, data.as_mut_ptr() as *mut u8);
                 return data;
             }
         }
@@ -353,9 +353,9 @@ impl Drop for Session {
     fn drop(&mut self) {
         unsafe {
             if self.model_type == ModelType::TensorFlow {
-                ssvm_tensorflow_delete_session(self.context);
+                wasmedge_tensorflow_delete_session(self.context);
             } else {
-                ssvm_tensorflowlite_delete_session(self.context);
+                wasmedge_tensorflowlite_delete_session(self.context);
             }
         }
     }
@@ -365,7 +365,7 @@ impl Drop for Session {
 pub fn load_jpg_image_to_rgb8(img_buf: &[u8], w: u32, h: u32) -> Vec<u8> {
     unsafe {
         let mut result_vec: Vec<u8> = vec![0; (w * h * 3) as usize];
-        ssvm_image_load_jpg_to_rgb8(
+        wasmedge_image_load_jpg_to_rgb8(
             img_buf.as_ptr() as *const u8,
             img_buf.len() as u32,
             w,
@@ -380,7 +380,7 @@ pub fn load_jpg_image_to_rgb8(img_buf: &[u8], w: u32, h: u32) -> Vec<u8> {
 pub fn load_jpg_image_to_bgr8(img_buf: &[u8], w: u32, h: u32) -> Vec<u8> {
     unsafe {
         let mut result_vec: Vec<u8> = vec![0; (w * h * 3) as usize];
-        ssvm_image_load_jpg_to_bgr8(
+        wasmedge_image_load_jpg_to_bgr8(
             img_buf.as_ptr() as *const u8,
             img_buf.len() as u32,
             w,
@@ -395,7 +395,7 @@ pub fn load_jpg_image_to_bgr8(img_buf: &[u8], w: u32, h: u32) -> Vec<u8> {
 pub fn load_jpg_image_to_rgb32f(img_buf: &[u8], w: u32, h: u32) -> Vec<f32> {
     unsafe {
         let mut result_vec: Vec<f32> = vec![0.0; (w * h * 3) as usize];
-        ssvm_image_load_jpg_to_rgb32f(
+        wasmedge_image_load_jpg_to_rgb32f(
             img_buf.as_ptr() as *const u8,
             img_buf.len() as u32,
             w,
@@ -410,7 +410,7 @@ pub fn load_jpg_image_to_rgb32f(img_buf: &[u8], w: u32, h: u32) -> Vec<f32> {
 pub fn load_jpg_image_to_bgr32f(img_buf: &[u8], w: u32, h: u32) -> Vec<f32> {
     unsafe {
         let mut result_vec: Vec<f32> = vec![0.0; (w * h * 3) as usize];
-        ssvm_image_load_jpg_to_bgr32f(
+        wasmedge_image_load_jpg_to_bgr32f(
             img_buf.as_ptr() as *const u8,
             img_buf.len() as u32,
             w,
@@ -425,7 +425,7 @@ pub fn load_jpg_image_to_bgr32f(img_buf: &[u8], w: u32, h: u32) -> Vec<f32> {
 pub fn load_png_image_to_rgb8(img_buf: &[u8], w: u32, h: u32) -> Vec<u8> {
     unsafe {
         let mut result_vec: Vec<u8> = vec![0; (w * h * 3) as usize];
-        ssvm_image_load_png_to_rgb8(
+        wasmedge_image_load_png_to_rgb8(
             img_buf.as_ptr() as *const u8,
             img_buf.len() as u32,
             w,
@@ -440,7 +440,7 @@ pub fn load_png_image_to_rgb8(img_buf: &[u8], w: u32, h: u32) -> Vec<u8> {
 pub fn load_png_image_to_bgr8(img_buf: &[u8], w: u32, h: u32) -> Vec<u8> {
     unsafe {
         let mut result_vec: Vec<u8> = vec![0; (w * h * 3) as usize];
-        ssvm_image_load_png_to_bgr8(
+        wasmedge_image_load_png_to_bgr8(
             img_buf.as_ptr() as *const u8,
             img_buf.len() as u32,
             w,
@@ -455,7 +455,7 @@ pub fn load_png_image_to_bgr8(img_buf: &[u8], w: u32, h: u32) -> Vec<u8> {
 pub fn load_png_image_to_rgb32f(img_buf: &[u8], w: u32, h: u32) -> Vec<f32> {
     unsafe {
         let mut result_vec: Vec<f32> = vec![0.0; (w * h * 3) as usize];
-        ssvm_image_load_png_to_rgb32f(
+        wasmedge_image_load_png_to_rgb32f(
             img_buf.as_ptr() as *const u8,
             img_buf.len() as u32,
             w,
@@ -470,7 +470,7 @@ pub fn load_png_image_to_rgb32f(img_buf: &[u8], w: u32, h: u32) -> Vec<f32> {
 pub fn load_png_image_to_bgr32f(img_buf: &[u8], w: u32, h: u32) -> Vec<f32> {
     unsafe {
         let mut result_vec: Vec<f32> = vec![0.0; (w * h * 3) as usize];
-        ssvm_image_load_png_to_bgr32f(
+        wasmedge_image_load_png_to_bgr32f(
             img_buf.as_ptr() as *const u8,
             img_buf.len() as u32,
             w,
