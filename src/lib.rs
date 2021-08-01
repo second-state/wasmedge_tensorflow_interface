@@ -176,24 +176,27 @@ pub enum ModelType {
 pub struct Session {
     context: u64,
     model_type: ModelType,
+    model_data: Vec<u8>,
 }
 
 impl Session {
     pub fn new<S: AsRef<[u8]>>(model_buf: S, mod_type: ModelType) -> Session {
+        let data = Vec::from(model_buf.as_ref());
         unsafe {
             Session {
                 context: if mod_type == ModelType::TensorFlow {
                     wasmedge_tensorflow_create_session(
-                        model_buf.as_ref().as_ptr() as *const u8,
-                        model_buf.as_ref().len() as u32,
+                        data.as_slice().as_ptr() as *const u8,
+                        data.len() as u32,
                     )
                 } else {
                     wasmedge_tensorflowlite_create_session(
-                        model_buf.as_ref().as_ptr() as *const u8,
-                        model_buf.as_ref().len() as u32,
+                        data.as_slice().as_ptr() as *const u8,
+                        data.len() as u32,
                     )
                 },
                 model_type: mod_type,
+                model_data: data,
             }
         }
     }
