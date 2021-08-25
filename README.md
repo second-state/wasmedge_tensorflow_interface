@@ -14,9 +14,10 @@ Developers will add the [`wasmedge_tensorflow_interface` crate](https://crates.i
 wasmedge_tensorflow_interface = "^0.2.0"
 ```
 
-Developers will bring the functions of `wasmedge_tensorflow_interface` into scope within their `Rust -> Wasm` application's code. For example, adding the following code to the top of their `main.rs
+Developers will bring the functions of `wasmedge_tensorflow_interface` into scope within their `Rust -> Wasm` application's code. For example, adding the following code to the top of their `main.rs`
+
 ```
-use wasmedge_process_interface;
+use wasmedge_tensorflow_interface;
 ```
 
 ## Image Loading And Conversion
