@@ -2,7 +2,7 @@
 //! # Adding this as a dependency
 //! ```rust, ignore
 //! [dependencies]
-//! wasmedge_tensorflow_interface = "^0.2.1"
+//! wasmedge_tensorflow_interface = "^0.2.2"
 //! ```
 //!
 //! # Bringing this into scope
@@ -332,7 +332,7 @@ impl Session {
                 if buf_len == 0 {
                     return data;
                 }
-                data.resize(buf_len, T::zero());
+                data.resize(buf_len / mem::size_of::<T::InnerType>(), T::zero());
                 wasmedge_tensorflow_get_tensor_data(tensor, data.as_mut_ptr() as *mut u8);
                 return data;
             } else {
@@ -345,7 +345,7 @@ impl Session {
                 if buf_len == 0 {
                     return Vec::new();
                 }
-                data.resize(buf_len, T::zero());
+                data.resize(buf_len / mem::size_of::<T::InnerType>(), T::zero());
                 wasmedge_tensorflowlite_get_tensor_data(tensor, data.as_mut_ptr() as *mut u8);
                 return data;
             }
@@ -362,8 +362,7 @@ impl Drop for Session {
                 wasmedge_tensorflowlite_delete_session(self.context);
             }
         }
-        self.clear_input();
-        self.clear_output();
+        self.model_data.clear();
     }
 }
 
