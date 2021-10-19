@@ -130,6 +130,13 @@ extern "C" {
         img_height: u32,
         dst_buf: *mut u8,
     ) -> u32;
+    pub fn wasmedge_image_load_jpg_to_luma(
+        img_buf: *const u8,
+        img_buf_len: u32,
+        img_width: u32,
+        img_height: u32,
+        dst_buf: *mut u8,
+    ) -> u32;
 }
 
 /// TensorType trait. Internal only.
@@ -484,4 +491,17 @@ pub fn load_png_image_to_bgr32f(img_buf: &[u8], w: u32, h: u32) -> Vec<f32> {
         );
     }
     result_vec
+}
+pub fn load_jpg_image_to_luma(img_buf: &[u8], w: u32, h: u32) -> Vec<u8>{
+    unsafe {
+        let mut result_vec: Vec<u8> = vec![0; (w * h * 3) as usize];
+        wasmedge_image_load_jpg_to_luma(
+            img_buf.as_ptr() as *const u8,
+            img_buf.len() as u32,
+            w,
+            h,
+            result_vec.as_mut_ptr() as *mut u8,
+        );
+        result_vec
+    }
 }
