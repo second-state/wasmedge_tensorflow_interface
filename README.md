@@ -11,7 +11,7 @@ From a high-level overview here, we are essentially building a tensorflow interf
 Developers will add the [`wasmedge_tensorflow_interface` crate](https://crates.io/crates/wasmedge_tensorflow_interface) as a dependency to their `Rust -> Wasm` applications. For example, add the following line to the application's `Cargo.toml` file.
 ```
 [dependencies]
-wasmedge_tensorflow_interface = "^0.2.1"
+wasmedge_tensorflow_interface = "^0.2.2"
 ```
 
 Developers will bring the functions of `wasmedge_tensorflow_interface` into scope within their `Rust -> Wasm` application's code. For example, adding the following code to the top of their `main.rs`
