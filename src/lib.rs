@@ -2,7 +2,7 @@
 //! # Adding this as a dependency
 //! ```rust, ignore
 //! [dependencies]
-//! wasmedge_tensorflow_interface = "^0.2.0"
+//! wasmedge_tensorflow_interface = "^0.2.1"
 //! ```
 //!
 //! # Bringing this into scope
@@ -319,6 +319,7 @@ impl Session {
         };
 
         // Get tensor data.
+        let mut data: Vec<T> = Vec::new();
         unsafe {
             if self.model_type == ModelType::TensorFlow {
                 let tensor = wasmedge_tensorflow_get_output_tensor(
@@ -329,9 +330,9 @@ impl Session {
                 );
                 let buf_len = wasmedge_tensorflow_get_tensor_len(tensor) as usize;
                 if buf_len == 0 {
-                    return Vec::new();
+                    return data;
                 }
-                let mut data: Vec<T> = vec![T::zero(); buf_len / mem::size_of::<T::InnerType>()];
+                data.resize(buf_len, T::zero());
                 wasmedge_tensorflow_get_tensor_data(tensor, data.as_mut_ptr() as *mut u8);
                 return data;
             } else {
@@ -344,7 +345,7 @@ impl Session {
                 if buf_len == 0 {
                     return Vec::new();
                 }
-                let mut data: Vec<T> = vec![T::zero(); buf_len / mem::size_of::<T::InnerType>()];
+                data.resize(buf_len, T::zero());
                 wasmedge_tensorflowlite_get_tensor_data(tensor, data.as_mut_ptr() as *mut u8);
                 return data;
             }
@@ -361,13 +362,15 @@ impl Drop for Session {
                 wasmedge_tensorflowlite_delete_session(self.context);
             }
         }
+        self.clear_input();
+        self.clear_output();
     }
 }
 
 /// Convert JPEG image in memory into rgb u8 vector.
 pub fn load_jpg_image_to_rgb8(img_buf: &[u8], w: u32, h: u32) -> Vec<u8> {
+    let mut result_vec: Vec<u8> = vec![0; (w * h * 3) as usize];
     unsafe {
-        let mut result_vec: Vec<u8> = vec![0; (w * h * 3) as usize];
         wasmedge_image_load_jpg_to_rgb8(
             img_buf.as_ptr() as *const u8,
             img_buf.len() as u32,
@@ -375,14 +378,14 @@ pub fn load_jpg_image_to_rgb8(img_buf: &[u8], w: u32, h: u32) -> Vec<u8> {
             h,
             result_vec.as_mut_ptr() as *mut u8,
         );
-        result_vec
     }
+    result_vec
 }
 
 /// Convert JPEG image in memory into bgr u8 vector.
 pub fn load_jpg_image_to_bgr8(img_buf: &[u8], w: u32, h: u32) -> Vec<u8> {
+    let mut result_vec: Vec<u8> = vec![0; (w * h * 3) as usize];
     unsafe {
-        let mut result_vec: Vec<u8> = vec![0; (w * h * 3) as usize];
         wasmedge_image_load_jpg_to_bgr8(
             img_buf.as_ptr() as *const u8,
             img_buf.len() as u32,
@@ -390,14 +393,14 @@ pub fn load_jpg_image_to_bgr8(img_buf: &[u8], w: u32, h: u32) -> Vec<u8> {
             h,
             result_vec.as_mut_ptr() as *mut u8,
         );
-        result_vec
     }
+    result_vec
 }
 
 /// Convert JPEG image in memory into rgb f32 vector.
 pub fn load_jpg_image_to_rgb32f(img_buf: &[u8], w: u32, h: u32) -> Vec<f32> {
+    let mut result_vec: Vec<f32> = vec![0.0; (w * h * 3) as usize];
     unsafe {
-        let mut result_vec: Vec<f32> = vec![0.0; (w * h * 3) as usize];
         wasmedge_image_load_jpg_to_rgb32f(
             img_buf.as_ptr() as *const u8,
             img_buf.len() as u32,
@@ -405,14 +408,14 @@ pub fn load_jpg_image_to_rgb32f(img_buf: &[u8], w: u32, h: u32) -> Vec<f32> {
             h,
             result_vec.as_mut_ptr() as *mut u8,
         );
-        result_vec
     }
+    result_vec
 }
 
 /// Convert JPEG image in memory into bgr f32 vector.
 pub fn load_jpg_image_to_bgr32f(img_buf: &[u8], w: u32, h: u32) -> Vec<f32> {
+    let mut result_vec: Vec<f32> = vec![0.0; (w * h * 3) as usize];
     unsafe {
-        let mut result_vec: Vec<f32> = vec![0.0; (w * h * 3) as usize];
         wasmedge_image_load_jpg_to_bgr32f(
             img_buf.as_ptr() as *const u8,
             img_buf.len() as u32,
@@ -420,14 +423,14 @@ pub fn load_jpg_image_to_bgr32f(img_buf: &[u8], w: u32, h: u32) -> Vec<f32> {
             h,
             result_vec.as_mut_ptr() as *mut u8,
         );
-        result_vec
     }
+    result_vec
 }
 
 /// Convert PNG image in memory into rgb u8 vector.
 pub fn load_png_image_to_rgb8(img_buf: &[u8], w: u32, h: u32) -> Vec<u8> {
+    let mut result_vec: Vec<u8> = vec![0; (w * h * 3) as usize];
     unsafe {
-        let mut result_vec: Vec<u8> = vec![0; (w * h * 3) as usize];
         wasmedge_image_load_png_to_rgb8(
             img_buf.as_ptr() as *const u8,
             img_buf.len() as u32,
@@ -435,14 +438,14 @@ pub fn load_png_image_to_rgb8(img_buf: &[u8], w: u32, h: u32) -> Vec<u8> {
             h,
             result_vec.as_mut_ptr() as *mut u8,
         );
-        result_vec
     }
+    result_vec
 }
 
 /// Convert PNG image in memory into bgr u8 vector.
 pub fn load_png_image_to_bgr8(img_buf: &[u8], w: u32, h: u32) -> Vec<u8> {
+    let mut result_vec: Vec<u8> = vec![0; (w * h * 3) as usize];
     unsafe {
-        let mut result_vec: Vec<u8> = vec![0; (w * h * 3) as usize];
         wasmedge_image_load_png_to_bgr8(
             img_buf.as_ptr() as *const u8,
             img_buf.len() as u32,
@@ -450,14 +453,14 @@ pub fn load_png_image_to_bgr8(img_buf: &[u8], w: u32, h: u32) -> Vec<u8> {
             h,
             result_vec.as_mut_ptr() as *mut u8,
         );
-        result_vec
     }
+    result_vec
 }
 
 /// Convert PNG image in memory into rgb f32 vector.
 pub fn load_png_image_to_rgb32f(img_buf: &[u8], w: u32, h: u32) -> Vec<f32> {
+    let mut result_vec: Vec<f32> = vec![0.0; (w * h * 3) as usize];
     unsafe {
-        let mut result_vec: Vec<f32> = vec![0.0; (w * h * 3) as usize];
         wasmedge_image_load_png_to_rgb32f(
             img_buf.as_ptr() as *const u8,
             img_buf.len() as u32,
@@ -465,14 +468,14 @@ pub fn load_png_image_to_rgb32f(img_buf: &[u8], w: u32, h: u32) -> Vec<f32> {
             h,
             result_vec.as_mut_ptr() as *mut u8,
         );
-        result_vec
     }
+    result_vec
 }
 
 /// Convert PNG image in memory into bgr f32 vector.
 pub fn load_png_image_to_bgr32f(img_buf: &[u8], w: u32, h: u32) -> Vec<f32> {
+    let mut result_vec: Vec<f32> = vec![0.0; (w * h * 3) as usize];
     unsafe {
-        let mut result_vec: Vec<f32> = vec![0.0; (w * h * 3) as usize];
         wasmedge_image_load_png_to_bgr32f(
             img_buf.as_ptr() as *const u8,
             img_buf.len() as u32,
@@ -480,6 +483,6 @@ pub fn load_png_image_to_bgr32f(img_buf: &[u8], w: u32, h: u32) -> Vec<f32> {
             h,
             result_vec.as_mut_ptr() as *mut u8,
         );
-        result_vec
     }
+    result_vec
 }
