@@ -1,8 +1,8 @@
 [package]
 name = "wasmedge_tensorflow_interface"
-version = "0.2.2"
+version = "0.3.0"
 authors = ["yiying <yiying@secondstate.io>"]
-edition = "2018"
+edition = "2021"
 readme = "README.md"
 repository = "https://github.com/second-state/wasmedge_tensorflow_interface"
 license-file = "LICENSE"
