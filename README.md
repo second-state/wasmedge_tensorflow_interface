@@ -61,7 +61,7 @@ let flat_img = wasmedge_tensorflow_interface::load_jpg_image_to_rgb32f(&img_buf,
 // The flat_img is a vec<f32> which contains normalized image in rgb32f format and resized to 224x224.
 ```
 
-For using the above funcions in WASM and executing in WasmEdge, users should install the [WasmEdge-Image plug-in](https://wasmedge.org/docs/contribute/source/plugin/image).
+For using the above funcions in WASM and executing in WasmEdge, users should install the [WasmEdge-Image plug-in](https://wasmedge.org/docs/start/install#wasmedge-image-plug-in).
 
 ### Inferring TensorFlow And TensorFlow-Lite Models
 
@@ -89,9 +89,9 @@ Or use the `TFLiteSession` to create a session for inferring the `tflite` models
 let mut session = wasmedge_tensorflow_interface::TFLiteSession::new(&mod_buf);
 ```
 
-For using the `TFSession` struct and executing in WasmEdge, users should install the [WasmEdge-TensorFlow plug-in with dependencies](https://wasmedge.org/docs/contribute/source/plugin/tensorflow).
+For using the `TFSession` struct and executing in WasmEdge, users should install the [WasmEdge-TensorFlow plug-in with dependencies](https://wasmedge.org/docs/start/install#wasmedge-tensorflow-plug-in).
 
-For using the `TFLiteSession` struct and executing in WasmEdge, users should install the [WasmEdge-TensorFlowLite plug-in with dependencies](https://wasmedge.org/docs/contribute/source/plugin/tensorflowlite).
+For using the `TFLiteSession` struct and executing in WasmEdge, users should install the [WasmEdge-TensorFlowLite plug-in with dependencies](https://wasmedge.org/docs/start/install#wasmedge-tensorflow-lite-plug-in).
 
 #### Prepare Input Tensors
 
@@ -121,7 +121,7 @@ cargo build --target=wasm32-wasi
 
 The output WASM file will be at `target/wasm32-wasi/debug/` or `target/wasm32-wasi/release`.
 
-Please refer to the [WasmEdge installation](https://wasmedge.org/docs/develop/build-and-run/install) to install WasmEdge with the necessary plug-ins, and [WasmEdge CLI](https://wasmedge.org/docs/develop/build-and-run/cli) WASM execution.
+Please refer to the [WasmEdge installation](https://wasmedge.org/docs/start/install) to install WasmEdge with the necessary plug-ins, and [WasmEdge CLI](https://wasmedge.org/docs/start/build-and-run/cli) WASM execution.
 
 ## Crates.io
 
